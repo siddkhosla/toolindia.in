@@ -1,1 +1,896 @@
-ToolIndia_BG_SD_Tracker_v5.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tool India — BG & SD Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--red:#C8161D;--dark:#1a1a1a;--surface:#f5f4f1;--border:#e0ddd6;--text:#1a1a1a;--muted:#666;--white:#fff;--green:#2d7a3a;--amber:#b85c00;--radius:6px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Barlow',sans-serif;background:var(--surface);color:var(--text);min-height:100vh}
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--dark)}
+.login-box{background:var(--white);border-radius:10px;padding:2.5rem 2rem;width:100%;max-width:360px;text-align:center}
+.login-logo{width:160px;margin:0 auto 1.25rem;display:block}
+.login-box h2{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:var(--dark);letter-spacing:.5px;margin-bottom:4px}
+.login-box p{font-size:12px;color:var(--muted);margin-bottom:1.5rem}
+.login-box input{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;font-family:'Barlow',sans-serif;margin-bottom:10px;background:#fafaf8}
+.login-box input:focus{outline:none;border-color:var(--red)}
+.login-btn{width:100%;padding:11px;background:var(--red);color:#fff;border:none;border-radius:var(--radius);font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;letter-spacing:.5px;cursor:pointer}
+.login-btn:hover{background:#a81218}
+.login-err{font-size:12px;color:var(--red);margin-top:6px;display:none}
+#app{display:none}
+.topbar{background:var(--dark);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:54px;border-bottom:3px solid var(--red)}
+.tb-left{display:flex;align-items:center;gap:14px}
+.tb-logo{height:34px}
+.tb-title{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#fff;letter-spacing:.5px;border-left:1px solid #444;padding-left:14px}
+.tb-right{display:flex;align-items:center;gap:8px}
+.sync-pill{font-size:11px;padding:3px 10px;border-radius:20px;background:#1e3d1e;color:#6fcf6f;font-weight:500}
+.tbtn-top{padding:6px 14px;font-size:13px;font-family:'Barlow',sans-serif;font-weight:500;border:1px solid #444;border-radius:var(--radius);background:transparent;color:#fff;cursor:pointer}
+.tbtn-top:hover{background:#333}
+.tbtn-top.pri{background:var(--red);border-color:var(--red)}
+.logout{font-size:11px;padding:4px 10px;background:transparent;border:1px solid #555;border-radius:var(--radius);color:#aaa;cursor:pointer;font-family:'Barlow',sans-serif}
+.logout:hover{color:#fff;border-color:#888}
+.nav-tabs{background:var(--dark);display:flex;border-top:1px solid #333;padding:0 1.5rem;gap:4px}
+.nav-tab{padding:8px 16px;font-size:13px;font-family:'Barlow',sans-serif;font-weight:500;background:transparent;border:none;color:#888;cursor:pointer;border-bottom:2px solid transparent}
+.nav-tab.active{color:#fff;border-bottom-color:var(--red)}
+.page{display:none;padding:1.25rem 1.5rem}
+.page.active{display:block}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:1.25rem}
+.stat{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px}
+.stat-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;font-weight:500}
+.stat-val{font-size:22px;font-weight:600;color:var(--text)}
+.stat-val.red{color:#9b1111}.stat-val.amber{color:var(--amber)}.stat-val.green{color:var(--green)}
+/* REMINDER BANNER */
+.reminder-banner{background:#fde8e8;border:1px solid #f5a0a0;border-radius:var(--radius);padding:.85rem 1rem;margin-bottom:1rem;display:none}
+.reminder-banner-title{font-size:12px;font-weight:700;color:#9b1111;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.reminder-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #fac8c8;font-size:13px}
+.reminder-row:last-child{border-bottom:none}
+.reminder-row .rinfo{flex:1}
+.reminder-row .rdays{font-size:12px;font-weight:600;color:#9b1111;margin:0 12px;white-space:nowrap}
+.reminder-mail-btn{font-size:11px;padding:3px 10px;background:var(--red);color:#fff;border:none;border-radius:3px;cursor:pointer;font-family:'Barlow',sans-serif;white-space:nowrap}
+.reminder-mail-btn:hover{background:#a81218}
+/* ALERTS */
+.alerts{background:#fff8e6;border:1px solid #f5d080;border-radius:var(--radius);padding:.75rem 1rem;margin-bottom:1rem;display:none}
+.alerts-ttl{font-size:11px;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.alert-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:5px 0;border-bottom:1px solid #f5e8c0;gap:8px}
+.alert-row:last-child{border-bottom:none}
+.atag{font-size:11px;font-weight:600;padding:2px 7px;border-radius:3px;flex-shrink:0}
+.atag-ov{background:#fde8e8;color:#9b1111}.atag-sn{background:#fff0d6;color:var(--amber)}
+.alert-mail-btn{font-size:11px;padding:3px 10px;background:var(--amber);color:#fff;border:none;border-radius:3px;cursor:pointer;font-family:'Barlow',sans-serif;white-space:nowrap;flex-shrink:0}
+/* TOOLBAR */
+.toolbar{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.toolbar input,.toolbar select{font-size:13px;font-family:'Barlow',sans-serif;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius);background:var(--white);color:var(--text);flex:1;min-width:140px}
+.ftabs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.ftab{padding:5px 14px;font-size:13px;font-family:'Barlow',sans-serif;font-weight:500;border:1px solid var(--border);border-radius:var(--radius);background:transparent;color:var(--muted);cursor:pointer}
+.ftab.active{background:var(--dark);color:#fff;border-color:var(--dark)}
+.tbl-wrap{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);overflow-x:auto;margin-bottom:.75rem}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);padding:10px 12px;border-bottom:1px solid var(--border);background:#fafaf8;white-space:nowrap}
+tbody tr{border-bottom:1px solid #f0ede6}
+tbody tr:hover{background:#fafaf8}
+tbody td{padding:9px 12px;color:var(--text);vertical-align:middle;white-space:nowrap}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:3px}
+.b-ov{background:#fde8e8;color:#9b1111}.b-sn{background:#fff0d6;color:#8a4500}
+.b-ac{background:#e3f5e8;color:#1a5c28}.b-rt{background:#eeece8;color:#555}
+.b-bg{background:#deeefb;color:#0c3e72}.b-sd{background:#ede8fb;color:#3a2480}
+.b-deducted{background:#fff0d6;color:#8a4500}.b-deposited{background:#e3f5e8;color:#1a5c28}
+.b-rem{background:#fde8e8;color:#9b1111}
+.empty{text-align:center;padding:2.5rem;color:var(--muted);font-size:14px}
+.ec{font-size:11px;color:var(--muted);text-align:right;margin-bottom:.5rem}
+.sb{font-size:11px;font-family:'Barlow',sans-serif;padding:3px 9px;border:1px solid var(--border);border-radius:3px;background:transparent;cursor:pointer;color:var(--text)}
+.sb:hover{background:#eee}
+.sb.gn{color:var(--green);border-color:var(--green)}.sb.gn:hover{background:#e3f5e8}
+.sb.bl{color:#0c3e72;border-color:#0c3e72}.sb.bl:hover{background:#deeefb}
+.sb.ml{color:var(--red);border-color:var(--red)}.sb.ml:hover{background:#fde8e8}
+/* OVERLAY / MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;align-items:flex-start;justify-content:center;padding:1rem;overflow-y:auto}
+.overlay.open{display:flex}
+.modal{background:var(--white);border-radius:8px;padding:1.75rem;width:100%;max-width:660px;margin:auto}
+.modal h2{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;margin-bottom:1.25rem;color:var(--dark);letter-spacing:.4px}
+.modal-sec{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--red);margin:1rem 0 .5rem;padding-bottom:4px;border-bottom:1px solid var(--border)}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.frow.full{grid-template-columns:1fr}
+.frow.three{grid-template-columns:1fr 1fr 1fr}
+.fg label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);display:block;margin-bottom:3px}
+.fg input,.fg select,.fg textarea{width:100%;font-size:13px;font-family:'Barlow',sans-serif;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);background:#fafaf8;color:var(--text)}
+.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--red)}
+.file-upload-box{border:2px dashed var(--border);border-radius:var(--radius);padding:1rem;text-align:center;cursor:pointer;background:#fafaf8}
+.file-upload-box:hover{border-color:var(--red)}
+.file-upload-box input[type="file"]{display:none}
+.file-preview{display:flex;align-items:center;gap:8px;background:#e3f5e8;border:1px solid #a8d5b5;border-radius:var(--radius);padding:8px 12px;margin-top:6px}
+.file-preview span{font-size:12px;color:var(--green);font-weight:500;flex:1}
+.file-preview button{font-size:11px;color:#9b1111;background:none;border:none;cursor:pointer}
+.mfooter{display:flex;justify-content:flex-end;gap:8px;margin-top:1.25rem;border-top:1px solid var(--border);padding-top:1rem}
+.mbtn{padding:8px 18px;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:600;letter-spacing:.4px;border:1px solid var(--border);border-radius:var(--radius);background:transparent;color:var(--text);cursor:pointer}
+.mbtn.pri{background:var(--red);color:#fff;border-color:var(--red)}
+/* EMAIL MODAL */
+.email-modal{background:var(--white);border-radius:8px;padding:1.75rem;width:100%;max-width:620px;margin:auto}
+.email-modal h2{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;margin-bottom:1.25rem;color:var(--dark)}
+.email-from-badge{display:inline-block;background:#e3f5e8;border:1px solid #a8d5b5;border-radius:var(--radius);padding:4px 12px;font-size:12px;color:var(--green);font-weight:600;margin-bottom:1rem}
+.email-preview{background:#fafaf8;border:1px solid var(--border);border-radius:var(--radius);padding:1rem;font-size:13px;line-height:1.7;color:var(--text);white-space:pre-wrap;margin:8px 0;max-height:280px;overflow-y:auto}
+/* DOC VIEWER */
+.doc-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:300;align-items:center;justify-content:center;padding:1rem}
+.doc-overlay.open{display:flex}
+.doc-modal{background:var(--white);border-radius:8px;width:100%;max-width:700px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column}
+.doc-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border);background:#fafaf8}
+.doc-close{background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted)}
+.doc-body{flex:1;overflow:auto;padding:1rem;display:flex;align-items:center;justify-content:center}
+.doc-body img{max-width:100%;max-height:70vh}
+.doc-body iframe{width:100%;height:70vh;border:none}
+/* REPORT */
+.report-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem}
+.rcard{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem}
+.rcard h3{font-size:13px;font-weight:600;color:var(--dark);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.rrow{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid #f5f3ee}
+.rrow:last-child{border-bottom:none;font-weight:600;padding-top:8px}
+.green-text{color:var(--green)}.red-text{color:#9b1111}.amber-text{color:var(--amber)}
+.section-title{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:var(--dark);margin-bottom:1rem}
+.ai-box{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:1.25rem;display:none}
+.ai-ttl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:8px}
+.ai-text{font-size:13px;line-height:1.65;white-space:pre-wrap}
+.footer{text-align:center;padding:1rem;font-size:11px;color:#bbb}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+<div class="login-box">
+  <img class="login-logo" id="login-logo" alt="Tool India">
+  <h2>BG & SD TRACKER</h2>
+  <p>M/S Tool India, A-8/1/1 MIDC Area, Nagpur-16</p>
+  <input type="text" id="lu" placeholder="Username" autocomplete="username">
+  <input type="password" id="lp" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+  <button class="login-btn" onclick="doLogin()">SIGN IN</button>
+  <div class="login-err" id="lerr">Incorrect username or password.</div>
+</div>
+</div>
+
+<!-- APP -->
+<div id="app">
+<div class="topbar">
+  <div class="tb-left">
+    <img class="tb-logo" id="tb-logo" alt="Tool India">
+    <span class="tb-title">BG & SD TRACKER</span>
+  </div>
+  <div class="tb-right">
+    <span class="sync-pill" id="sync-pill">Cloud synced</span>
+    <button class="tbtn-top" onclick="showAiDigest()">AI digest</button>
+    <button class="tbtn-top pri" onclick="openModal()">+ Add entry</button>
+    <button class="logout" onclick="doLogout()">Logout</button>
+  </div>
+</div>
+<div class="nav-tabs">
+  <button class="nav-tab active" onclick="showPage('tracker',this)">Tracker</button>
+  <button class="nav-tab" onclick="showPage('fd',this)">FD & Interest</button>
+  <button class="nav-tab" onclick="showPage('charges',this)">Bank Charges</button>
+  <button class="nav-tab" onclick="showPage('report',this)">Reports</button>
+</div>
+
+<!-- TRACKER PAGE -->
+<div class="page active" id="page-tracker">
+  <!-- AUTO REMINDERS BANNER -->
+  <div class="reminder-banner" id="reminder-banner">
+    <div class="reminder-banner-title">⏰ Automatic reminders — 12+ months since last supply (every 15 days)</div>
+    <div id="reminder-list"></div>
+  </div>
+  <!-- DUE/OVERDUE ALERTS -->
+  <div class="alerts" id="alerts-box">
+    <div class="alerts-ttl">⚠️ BG / SD action required</div>
+    <div id="alerts-list"></div>
+  </div>
+  <div class="stats" id="stats"></div>
+  <div class="ai-box" id="ai-box"><div class="ai-ttl">AI Digest</div><div class="ai-text" id="ai-text"></div></div>
+  <div class="ftabs">
+    <button class="ftab active" onclick="setTab('all',this)">All</button>
+    <button class="ftab" onclick="setTab('BG',this)">Bank guarantees</button>
+    <button class="ftab" onclick="setTab('SD',this)">Security deposits</button>
+    <button class="ftab" onclick="setTab('overdue',this)">Overdue</button>
+    <button class="ftab" onclick="setTab('soon',this)">Due in 60 days</button>
+    <button class="ftab" onclick="setTab('reminder',this)">Reminder due</button>
+    <button class="ftab" onclick="setTab('returned',this)">Returned</button>
+  </div>
+  <div class="toolbar">
+    <input id="search" placeholder="Search customer / reference / order..." oninput="render()">
+    <select id="sort" onchange="render()">
+      <option value="due">Sort by due date</option>
+      <option value="supply">Sort by last supply date</option>
+      <option value="issue">Sort by issue date</option>
+      <option value="amount">Sort by amount</option>
+      <option value="customer">Sort by customer A–Z</option>
+    </select>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr>
+        <th>Type</th><th>Customer</th><th>Reference</th>
+        <th>Issue date</th><th>Last supply date</th><th>Amount (₹)</th>
+        <th>SD type</th><th>FD %</th><th>Return date</th><th>Days left</th>
+        <th>Reminder</th><th>Status</th><th>Doc</th><th>Actions</th>
+      </tr></thead>
+      <tbody id="tbl"></tbody>
+    </table>
+    <div id="tbl-empty" class="empty" style="display:none">No entries found.</div>
+  </div>
+  <div class="ec" id="ec"></div>
+</div>
+
+<!-- FD PAGE -->
+<div class="page" id="page-fd">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+    <div class="section-title">Fixed Deposits & Interest Earned</div>
+    <button class="tbtn-top pri" onclick="openFdModal()">+ Add FD record</button>
+  </div>
+  <div class="stats" id="fd-stats"></div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>BG Ref</th><th>Customer</th><th>FD Amount</th><th>FD %</th><th>Start</th><th>Maturity</th><th>Rate %</th><th>Interest Earned</th><th>Bank</th><th>Actions</th></tr></thead>
+    <tbody id="fd-tbl"></tbody>
+  </table><div id="fd-empty" class="empty" style="display:none">No FD records yet.</div></div>
+</div>
+
+<!-- CHARGES PAGE -->
+<div class="page" id="page-charges">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+    <div class="section-title">Bank Charges Paid</div>
+    <button class="tbtn-top pri" onclick="openChgModal()">+ Add charge</button>
+  </div>
+  <div class="stats" id="chg-stats"></div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Date</th><th>BG Ref</th><th>Customer</th><th>Type</th><th>Amount</th><th>Bank</th><th>Remarks</th><th>Actions</th></tr></thead>
+    <tbody id="chg-tbl"></tbody>
+  </table><div id="chg-empty" class="empty" style="display:none">No charges yet.</div></div>
+</div>
+
+<!-- REPORT PAGE -->
+<div class="page" id="page-report">
+  <div class="section-title">Financial Summary Report</div>
+  <div class="report-grid" id="report-content"></div>
+  <div class="tbl-wrap" id="report-detail"></div>
+</div>
+</div>
+
+<!-- MAIN ENTRY MODAL -->
+<div class="overlay" id="overlay">
+<div class="modal">
+  <h2 id="modal-title">ADD NEW ENTRY</h2>
+  <div class="modal-sec">Basic details</div>
+  <div class="frow">
+    <div class="fg"><label>Type *</label><select id="f-type" onchange="toggleTypeFields()"><option value="BG">Bank Guarantee (BG)</option><option value="SD">Security Deposit (SD)</option></select></div>
+    <div class="fg"><label>Status</label><select id="f-status"><option value="active">Active</option><option value="returned">Returned</option></select></div>
+  </div>
+  <div class="frow">
+    <div class="fg"><label>Customer name *</label><input id="f-customer" placeholder="e.g. MAHAGENCO"></div>
+    <div class="fg"><label>Customer email (for reminders)</label><input id="f-email" type="email" placeholder="e.g. accounts@mahagenco.in"></div>
+  </div>
+  <div class="frow">
+    <div class="fg"><label>Reference / BG no. *</label><input id="f-ref" placeholder="e.g. 3166IGP000371124"></div>
+    <div class="fg"><label>Order / PO reference</label><input id="f-order" placeholder="e.g. HO/4500127167"></div>
+  </div>
+  <div class="frow">
+    <div class="fg"><label>BG / SD Amount (₹) *</label><input id="f-amount" type="number" oninput="calcFd()"></div>
+    <div class="fg"><label>Bank name</label><input id="f-bank" placeholder="e.g. Bank of Baroda"></div>
+  </div>
+  <div class="frow">
+    <div class="fg"><label>Issue date *</label><input id="f-issue" type="date"></div>
+    <div class="fg"><label>Last supply date *</label><input id="f-supply" type="date" oninput="calcReturnDate()"></div>
+  </div>
+  <div class="frow">
+    <div class="fg"><label>Return / expiry date *</label><input id="f-due" type="date"></div>
+    <div class="fg"><label>Claim expiry date</label><input id="f-claim" type="date"></div>
+  </div>
+  <!-- SD SECTION -->
+  <div id="sd-section" style="display:none">
+    <div class="modal-sec">Security Deposit type</div>
+    <div class="frow">
+      <div class="fg"><label>SD direction *</label>
+        <select id="f-sd-type">
+          <option value="">-- Select --</option>
+          <option value="deducted">Deducted from customer (customer owes return)</option>
+          <option value="deposited">Deposited by us to customer (we want return)</option>
+        </select>
+      </div>
+      <div class="fg"><label>SD transaction date</label><input id="f-sd-date" type="date"></div>
+    </div>
+  </div>
+  <!-- FD SECTION -->
+  <div id="fd-section">
+    <div class="modal-sec">Fixed Deposit details</div>
+    <div class="frow three">
+      <div class="fg"><label>FD % of BG</label>
+        <select id="f-fd-pct" onchange="calcFd()">
+          <option value="">None</option><option value="25">25%</option><option value="50">50%</option>
+          <option value="75">75%</option><option value="100">100%</option><option value="custom">Custom</option>
+        </select>
+      </div>
+      <div class="fg"><label>Custom %</label><input id="f-fd-custom" type="number" placeholder="e.g. 30" oninput="calcFd()"></div>
+      <div class="fg"><label>FD Amount (₹)</label><input id="f-fd-amt" type="number" style="background:#f0f0f0" readonly></div>
+    </div>
+    <div class="frow">
+      <div class="fg"><label>Interest rate % p.a.</label><input id="f-fd-rate" type="number" step="0.01" placeholder="e.g. 6.5" oninput="calcFdInterest()"></div>
+      <div class="fg"><label>Tenure (months)</label><input id="f-fd-tenure" type="number" placeholder="e.g. 18" oninput="calcFdInterest()"></div>
+    </div>
+    <div class="frow">
+      <div class="fg"><label>Projected interest (₹)</label><input id="f-fd-interest" type="number" style="background:#f0f0f0" readonly></div>
+      <div class="fg"><label>Actual interest received (₹)</label><input id="f-fd-actual" type="number" placeholder="Enter when FD matures"></div>
+    </div>
+  </div>
+  <!-- REMINDER SETTINGS -->
+  <div class="modal-sec">Reminder settings</div>
+  <div class="frow">
+    <div class="fg"><label>Reminder start (months after last supply)</label>
+      <select id="f-rem-months">
+        <option value="12">12 months (default)</option>
+        <option value="6">6 months</option>
+        <option value="9">9 months</option>
+        <option value="15">15 months</option>
+        <option value="18">18 months</option>
+      </select>
+    </div>
+    <div class="fg"><label>Reminder frequency</label>
+      <select id="f-rem-freq">
+        <option value="15">Every 15 days (default)</option>
+        <option value="7">Every 7 days</option>
+        <option value="30">Every 30 days</option>
+      </select>
+    </div>
+  </div>
+  <!-- DOCUMENT UPLOAD -->
+  <div class="modal-sec">Upload BG / SD document</div>
+  <div class="frow full">
+    <div class="fg">
+      <div class="file-upload-box" onclick="document.getElementById('f-doc-file').click()">
+        <input type="file" id="f-doc-file" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileSelect(event)">
+        <p style="font-size:13px;color:var(--muted)">📎 Click to upload BG / SD copy (PDF or image, max 2MB)</p>
+        <div class="file-name" id="f-doc-name" style="font-size:12px;color:var(--green);margin-top:4px"></div>
+      </div>
+      <div id="f-doc-preview" style="display:none" class="file-preview">
+        <span id="f-doc-preview-name"></span>
+        <button onclick="clearFile()">✕ Remove</button>
+      </div>
+    </div>
+  </div>
+  <div class="modal-sec">Remarks</div>
+  <div class="frow full"><div class="fg"><textarea id="f-remarks" rows="2" placeholder="Optional notes..."></textarea></div></div>
+  <div class="mfooter">
+    <button class="mbtn" onclick="closeModal()">Cancel</button>
+    <button class="mbtn pri" onclick="saveEntry()">Save to cloud</button>
+  </div>
+</div>
+</div>
+
+<!-- EMAIL COMPOSE MODAL -->
+<div class="overlay" id="email-overlay">
+<div class="email-modal">
+  <h2>✉️ Send email to customer</h2>
+  <div class="email-from-badge">From: sales@toolindia.in</div>
+  <div class="frow">
+    <div class="fg"><label>To (customer email)</label><input id="em-to" type="email" placeholder="customer@example.com"></div>
+    <div class="fg"><label>CC</label><input id="em-cc" placeholder="Optional CC email"></div>
+  </div>
+  <div class="frow full"><div class="fg"><label>Subject</label><input id="em-subject"></div></div>
+  <div class="frow full"><div class="fg"><label>Email body (editable)</label><textarea id="em-body" rows="10" style="font-size:13px;line-height:1.6"></textarea></div></div>
+  <div style="font-size:11px;color:var(--muted);margin-top:6px">This will open your email client (Outlook / Gmail) with the message pre-filled, sent from sales@toolindia.in</div>
+  <div class="mfooter">
+    <button class="mbtn" onclick="closeEmailModal()">Cancel</button>
+    <button class="mbtn pri" onclick="sendEmail()">Open in email client ✉️</button>
+  </div>
+</div>
+</div>
+
+<!-- FD MODAL -->
+<div class="overlay" id="fd-overlay">
+<div class="modal">
+  <h2>FD RECORD</h2>
+  <div class="frow"><div class="fg"><label>BG Reference *</label><input id="fd-ref"></div><div class="fg"><label>Customer</label><input id="fd-cust"></div></div>
+  <div class="frow three"><div class="fg"><label>FD Amount *</label><input id="fd-amt" type="number"></div><div class="fg"><label>FD %</label><input id="fd-pct" type="number"></div><div class="fg"><label>Rate % p.a.</label><input id="fd-rate" type="number" step="0.01"></div></div>
+  <div class="frow"><div class="fg"><label>Start date</label><input id="fd-start" type="date"></div><div class="fg"><label>Maturity date</label><input id="fd-end" type="date"></div></div>
+  <div class="frow"><div class="fg"><label>Projected interest</label><input id="fd-proj" type="number"></div><div class="fg"><label>Actual interest received</label><input id="fd-actual" type="number"></div></div>
+  <div class="frow full"><div class="fg"><label>Bank</label><input id="fd-bank"></div></div>
+  <div class="mfooter"><button class="mbtn" onclick="closeFdModal()">Cancel</button><button class="mbtn pri" onclick="saveFd()">Save</button></div>
+</div>
+</div>
+
+<!-- CHARGE MODAL -->
+<div class="overlay" id="chg-overlay">
+<div class="modal">
+  <h2>BANK CHARGE</h2>
+  <div class="frow"><div class="fg"><label>Date *</label><input id="chg-date" type="date"></div><div class="fg"><label>BG Reference</label><input id="chg-ref"></div></div>
+  <div class="frow"><div class="fg"><label>Customer</label><input id="chg-cust"></div><div class="fg"><label>Bank</label><input id="chg-bank"></div></div>
+  <div class="frow"><div class="fg"><label>Charge type *</label><select id="chg-type"><option>BG Commission</option><option>Processing fee</option><option>Stamp duty</option><option>Documentation</option><option>Amendment fee</option><option>Other</option></select></div><div class="fg"><label>Amount (₹) *</label><input id="chg-amt" type="number"></div></div>
+  <div class="frow full"><div class="fg"><label>Remarks</label><input id="chg-remarks"></div></div>
+  <div class="mfooter"><button class="mbtn" onclick="closeChgModal()">Cancel</button><button class="mbtn pri" onclick="saveChg()">Save</button></div>
+</div>
+</div>
+
+<!-- DOC VIEWER -->
+<div class="doc-overlay" id="doc-overlay">
+  <div class="doc-modal">
+    <div class="doc-header"><h3 id="doc-title">Document</h3><button class="doc-close" onclick="closeDocViewer()">✕</button></div>
+    <div class="doc-body" id="doc-body"></div>
+  </div>
+</div>
+
+<div class="footer">Tool India — M/S Tool India, A-8/1/1 MIDC Area, Nagpur-16 | ISO 9001:2008 | sales@toolindia.in</div>
+
+<script>
+const LOGO_SRC="data:image/png;base64,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";
+document.getElementById('login-logo').src=LOGO_SRC;
+document.getElementById('tb-logo').src=LOGO_SRC;
+
+const USERS=[{user:'admin',pass:'toolindia@2024',role:'Admin'},{user:'manager',pass:'bg@manager1',role:'Manager'},{user:'accounts',pass:'accounts@123',role:'Accounts'}];
+const SK='ti_bg_v5',SK_FD='ti_fd_v2',SK_CHG='ti_chg_v2';
+let entries=[],fds=[],charges=[],editId=null,editFdId=null,editChgId=null,currentTab='all',pendingFileData=null,pendingFileName=null;
+
+function doLogin(){
+  const u=document.getElementById('lu').value.trim(),p=document.getElementById('lp').value;
+  const m=USERS.find(x=>x.user===u&&x.pass===p);
+  if(m){document.getElementById('login-screen').style.display='none';document.getElementById('app').style.display='block';document.getElementById('lerr').style.display='none';cloudLoadAll();}
+  else document.getElementById('lerr').style.display='block';
+}
+function doLogout(){document.getElementById('login-screen').style.display='flex';document.getElementById('app').style.display='none';document.getElementById('lp').value='';}
+
+function setSP(t,bg,col){const p=document.getElementById('sync-pill');p.textContent=t;p.style.background=bg;p.style.color=col;}
+async function cloudLoadAll(){
+  setSP('Syncing...','#443300','#fac740');
+  try{
+    const[r1,r2,r3]=await Promise.all([window.storage.get(SK,true),window.storage.get(SK_FD,true),window.storage.get(SK_CHG,true)]);
+    entries=r1?JSON.parse(r1.value):[];fds=r2?JSON.parse(r2.value):[];charges=r3?JSON.parse(r3.value):[];
+    if(!entries.length)seedDemo();
+  }catch(e){entries=[];fds=[];charges=[];seedDemo();}
+  setSP('Cloud synced','#1e3d1e','#6fcf6f');
+  render();renderFd();renderChg();renderReport();
+}
+async function cloudSave(){
+  setSP('Saving...','#443300','#fac740');
+  try{await Promise.all([window.storage.set(SK,JSON.stringify(entries),true),window.storage.set(SK_FD,JSON.stringify(fds),true),window.storage.set(SK_CHG,JSON.stringify(charges),true)]);setSP('Cloud synced','#1e3d1e','#6fcf6f');}
+  catch(e){setSP('Save failed','#3d1e1e','#cf6f6f');}
+}
+
+function seedDemo(){
+  const d=(n)=>{const x=new Date();x.setDate(x.getDate()+n);return x.toISOString().split('T')[0];};
+  entries=[
+    {id:1,type:'BG',customer:'MAHAGENCO',email:'accounts@mahagenco.in',ref:'3166IGP000371124',order:'HO/4500127167',amount:1298838,bank:'Bank of Baroda',issue:'2024-01-31',supply:'2023-12-15',due:'2025-07-15',claim:'2026-01-15',status:'active',sdType:'',sdDate:'',fdPct:25,fdAmt:324709,fdRate:6.5,fdTenure:18,fdInterest:31659,fdActual:'',remMonths:12,remFreq:15,docData:'',docName:'',remarks:'Coal mill fuel pipes & bends'},
+    {id:2,type:'BG',customer:'NTPC Ltd',email:'procurement@ntpc.in',ref:'BG-2024-NTP-001',order:'NTPC/PO/2024/55',amount:2500000,bank:'SBI Nagpur',issue:'2024-03-10',supply:d(-400),due:d(18),claim:d(35),status:'active',sdType:'',sdDate:'',fdPct:100,fdAmt:2500000,fdRate:7,fdTenure:12,fdInterest:175000,fdActual:'',remMonths:12,remFreq:15,docData:'',docName:'',remarks:''},
+    {id:3,type:'SD',customer:'TATA Power',email:'finance@tatapower.com',ref:'SD-TPW-2023-08',order:'TPW/ORDER/2023/12',amount:750000,bank:'-',issue:'2023-08-15',supply:'2023-07-20',due:d(-5),claim:'',status:'active',sdType:'deducted',sdDate:'2023-08-15',fdPct:0,fdAmt:0,fdRate:'',fdTenure:'',fdInterest:'',fdActual:'',remMonths:12,remFreq:15,docData:'',docName:'',remarks:'18 months from supply'},
+    {id:4,type:'SD',customer:'CESC Ltd',email:'',ref:'SD-CESC-2024-02',order:'CESC/PO/2024/03',amount:400000,bank:'-',issue:'2024-02-20',supply:'2024-02-01',due:d(52),claim:'',status:'active',sdType:'deposited',sdDate:'2024-02-20',fdPct:0,fdAmt:0,fdRate:'',fdTenure:'',fdInterest:'',fdActual:'',remMonths:12,remFreq:15,docData:'',docName:'',remarks:''},
+    {id:5,type:'BG',customer:'Adani Power',email:'bgcell@adanipower.com',ref:'BG-ADP-2023-11',order:'ADP/2023/88',amount:1800000,bank:'HDFC Bank',issue:'2023-11-01',supply:d(-500),due:d(95),claim:d(115),status:'active',sdType:'',sdDate:'',fdPct:50,fdAmt:900000,fdRate:6.75,fdTenure:15,fdInterest:76219,fdActual:78500,remMonths:12,remFreq:15,docData:'',docName:'',remarks:''},
+  ];
+  fds=[{id:1,ref:'3166IGP000371124',cust:'MAHAGENCO',amt:324709,pct:25,rate:6.5,start:'2024-02-01',end:'2025-08-01',proj:31659,actual:'',bank:'Bank of Baroda Wadi'}];
+  charges=[{id:1,date:'2024-02-01',ref:'3166IGP000371124',cust:'MAHAGENCO',type:'BG Commission',amt:12988,bank:'Bank of Baroda',remarks:'0.5%'},{id:2,date:'2024-03-12',ref:'BG-2024-NTP-001',cust:'NTPC Ltd',type:'Processing fee',amt:25000,bank:'SBI Nagpur',remarks:''}];
+}
+
+// ── HELPERS ──
+function daysLeft(due){const t=new Date();t.setHours(0,0,0,0);return Math.round((new Date(due)-t)/86400000);}
+function daysSince(date){const t=new Date();t.setHours(0,0,0,0);return Math.round((t-new Date(date))/86400000);}
+function fmt(n){if(!n&&n!==0)return '—';return Number(n).toLocaleString('en-IN');}
+function fmtD(d){if(!d||d==='-')return '—';return new Date(d).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});}
+function getStatus(e){if(e.status==='returned')return 'returned';const dl=daysLeft(e.due);if(dl<0)return 'overdue';if(dl<=60)return 'soon';return 'active';}
+
+// Reminder logic: starts after X months from supply, every Y days
+function getReminderStatus(e){
+  if(e.status==='returned'||!e.supply)return null;
+  const remMonths=Number(e.remMonths)||12;
+  const remFreq=Number(e.remFreq)||15;
+  const supplyDays=daysSince(e.supply);
+  const triggerDays=remMonths*30;
+  if(supplyDays<triggerDays)return null; // not yet time
+  // Check if a reminder is due today (every remFreq days after trigger)
+  const daysSinceTrigger=supplyDays-triggerDays;
+  const cycleDay=daysSinceTrigger%remFreq;
+  // Show reminder if within 3 days of a cycle (to catch if user doesn't open every day)
+  if(cycleDay<=3){
+    const monthsOver=Math.floor(supplyDays/30);
+    return {monthsOver, daysSinceTrigger, cycleDay};
+  }
+  return null;
+}
+
+function showPage(pg,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+pg).classList.add('active');el.classList.add('active');
+  if(pg==='report')renderReport();
+}
+
+function renderStats(){
+  const active=entries.filter(e=>e.status!=='returned');
+  const ov=active.filter(e=>daysLeft(e.due)<0);
+  const soon=active.filter(e=>{const d=daysLeft(e.due);return d>=0&&d<=60;});
+  const remDue=active.filter(e=>getReminderStatus(e));
+  const tot=active.reduce((s,e)=>s+Number(e.amount||0),0);
+  const sdDed=active.filter(e=>e.type==='SD'&&e.sdType==='deducted').length;
+  const sdDep=active.filter(e=>e.type==='SD'&&e.sdType==='deposited').length;
+  document.getElementById('stats').innerHTML=`
+    <div class="stat"><div class="stat-lbl">Active entries</div><div class="stat-val">${active.length}</div></div>
+    <div class="stat"><div class="stat-lbl">Overdue</div><div class="stat-val red">${ov.length}</div></div>
+    <div class="stat"><div class="stat-lbl">Due in 60 days</div><div class="stat-val amber">${soon.length}</div></div>
+    <div class="stat"><div class="stat-lbl">Reminder due now</div><div class="stat-val red">${remDue.length}</div></div>
+    <div class="stat"><div class="stat-lbl">SD deducted</div><div class="stat-val amber">${sdDed}</div></div>
+    <div class="stat"><div class="stat-lbl">SD deposited</div><div class="stat-val green">${sdDep}</div></div>
+    <div class="stat"><div class="stat-lbl">Total value</div><div class="stat-val" style="font-size:13px">₹${fmt(tot)}</div></div>
+  `;
+  // REMINDER BANNER
+  const rb=document.getElementById('reminder-banner'),rl=document.getElementById('reminder-list');
+  if(remDue.length){
+    rb.style.display='block';
+    rl.innerHTML=remDue.map(e=>{
+      const rs=getReminderStatus(e);
+      return `<div class="reminder-row">
+        <div class="rinfo"><strong>${e.customer}</strong> — ${e.type} ${e.ref}<br>
+        <span style="font-size:11px;color:#9b1111">Last supply: ${fmtD(e.supply)} · ${rs.monthsOver} months ago · Remind every ${e.remFreq} days</span></div>
+        <div class="rdays">${rs.monthsOver}mo since supply</div>
+        <button class="reminder-mail-btn" onclick="openEmailModal(${e.id},'reminder')">✉️ Send reminder</button>
+      </div>`;
+    }).join('');
+  }else rb.style.display='none';
+  // ALERTS BANNER
+  const ab=document.getElementById('alerts-box'),al=document.getElementById('alerts-list');
+  const alerts=[...ov,...soon].slice(0,6);
+  if(alerts.length){
+    ab.style.display='block';
+    al.innerHTML=alerts.map(e=>{
+      const dl=daysLeft(e.due);
+      const tag=dl<0?'<span class="atag atag-ov">OVERDUE</span>':'<span class="atag atag-sn">DUE SOON</span>';
+      const days=dl<0?`${Math.abs(dl)}d overdue`:`${dl}d left`;
+      return `<div class="alert-row">${tag}<span style="flex:1"><strong>${e.customer}</strong> — ${e.type} ${e.ref}</span>
+        <span style="font-size:12px;font-weight:600;color:${dl<0?'#9b1111':''}">${days} · ₹${fmt(e.amount)}</span>
+        <button class="alert-mail-btn" onclick="openEmailModal(${e.id},'due')">✉️ Mail</button>
+      </div>`;
+    }).join('');
+  }else ab.style.display='none';
+}
+
+function render(){
+  renderStats();
+  const search=(document.getElementById('search').value||'').toLowerCase();
+  const sort=document.getElementById('sort').value;
+  let data=[...entries];
+  if(currentTab==='BG')data=data.filter(e=>e.type==='BG');
+  else if(currentTab==='SD')data=data.filter(e=>e.type==='SD');
+  else if(currentTab==='overdue')data=data.filter(e=>getStatus(e)==='overdue');
+  else if(currentTab==='soon')data=data.filter(e=>getStatus(e)==='soon');
+  else if(currentTab==='returned')data=data.filter(e=>e.status==='returned');
+  else if(currentTab==='reminder')data=data.filter(e=>getReminderStatus(e));
+  if(search)data=data.filter(e=>(e.customer+e.ref+e.order+e.bank+'').toLowerCase().includes(search));
+  if(sort==='amount')data.sort((a,b)=>b.amount-a.amount);
+  else if(sort==='customer')data.sort((a,b)=>a.customer.localeCompare(b.customer));
+  else if(sort==='issue')data.sort((a,b)=>new Date(b.issue)-new Date(a.issue));
+  else if(sort==='supply')data.sort((a,b)=>new Date(a.supply)-new Date(b.supply));
+  else data.sort((a,b)=>new Date(a.due)-new Date(b.due));
+  document.getElementById('ec').textContent=`Showing ${data.length} entr${data.length===1?'y':'ies'}`;
+  const tbody=document.getElementById('tbl'),empty=document.getElementById('tbl-empty');
+  if(!data.length){tbody.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  tbody.innerHTML=data.map(e=>{
+    const st=getStatus(e),dl=daysLeft(e.due);
+    let dlHtml='—';
+    if(e.status!=='returned'){if(dl<0)dlHtml=`<span style="color:#9b1111;font-weight:600">${Math.abs(dl)}d over</span>`;else if(dl<=60)dlHtml=`<span style="color:var(--amber);font-weight:600">${dl}d</span>`;else dlHtml=`<span style="color:var(--muted)">${dl}d</span>`;}
+    const stMap={overdue:'b-ov',soon:'b-sn',active:'b-ac',returned:'b-rt'};
+    const rs=getReminderStatus(e);
+    const remHtml=rs?`<span class="badge b-rem" title="Reminder due — ${rs.monthsOver} months since supply">🔔 Due</span>`:'<span style="color:#ccc;font-size:11px">—</span>';
+    const sdBadge=e.type==='SD'&&e.sdType?`<span class="badge ${e.sdType==='deducted'?'b-deducted':'b-deposited'}">${e.sdType==='deducted'?'Deducted':'Deposited'}</span>`:'—';
+    const docBtn=e.docData?`<button class="sb bl" onclick="viewDoc(${e.id})">📄 View</button>`:'—';
+    const supplyDays=e.supply?daysSince(e.supply):null;
+    const supplyHtml=e.supply?`${fmtD(e.supply)}<br><span style="font-size:10px;color:${supplyDays>365?'#9b1111':'#999'}">${Math.floor(supplyDays/30)}mo ago</span>`:'—';
+    return `<tr>
+      <td><span class="badge ${e.type==='BG'?'b-bg':'b-sd'}">${e.type}</span></td>
+      <td><strong style="font-weight:500">${e.customer}</strong><br><span style="font-size:10px;color:#999">${e.email||'no email'}</span></td>
+      <td style="font-size:11px;color:#666">${e.ref}</td>
+      <td style="font-size:12px">${fmtD(e.issue)}</td>
+      <td style="font-size:12px">${supplyHtml}</td>
+      <td>₹${fmt(e.amount)}</td>
+      <td>${sdBadge}</td>
+      <td style="font-size:12px">${e.fdPct?e.fdPct+'%':'—'}</td>
+      <td style="font-size:12px">${fmtD(e.due)}</td>
+      <td>${dlHtml}</td>
+      <td>${remHtml}</td>
+      <td><span class="badge ${stMap[st]}">${{overdue:'Overdue',soon:'Due soon',active:'Active',returned:'Returned'}[st]}</span></td>
+      <td>${docBtn}</td>
+      <td style="white-space:nowrap;display:flex;gap:4px;flex-wrap:wrap;padding:6px 12px">
+        <button class="sb" onclick="editEntry(${e.id})">Edit</button>
+        <button class="sb ml" onclick="openEmailModal(${e.id},'general')">✉️</button>
+        ${e.status!=='returned'?`<button class="sb gn" onclick="markReturned(${e.id})">Returned</button>`:''}
+      </td>
+    </tr>`;
+  }).join('');
+}
+function setTab(t,el){currentTab=t;document.querySelectorAll('.ftab').forEach(x=>x.classList.remove('active'));el.classList.add('active');render();}
+
+// ── EMAIL ──
+function openEmailModal(id,type){
+  const e=entries.find(x=>x.id===id);
+  document.getElementById('em-to').value=e.email||'';
+  document.getElementById('em-cc').value='';
+  const today=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});
+  let subject='',body='';
+  if(type==='reminder'){
+    const rs=getReminderStatus(e);
+    subject=`Reminder: Return of ${e.type} / Security Deposit — ${e.ref} — ${e.customer}`;
+    body=`Dear Sir / Madam,
+
+Greetings from Tool India!
+
+This is a reminder regarding the ${e.type==='SD'?'Security Deposit':'Bank Guarantee'} as per the details below:
+
+  Customer     : ${e.customer}
+  Reference No : ${e.ref}
+  Order Ref    : ${e.order||'—'}
+  Amount       : ₹${fmt(e.amount)}
+  Last Supply  : ${fmtD(e.supply)}
+  Return Due   : ${fmtD(e.due)}
+
+It has been approximately ${rs?rs.monthsOver:12} months since the last supply date. As per our agreement, we request you to kindly arrange the return / release of the above ${e.type==='SD'?'Security Deposit':'Bank Guarantee'} at the earliest.
+
+Please confirm receipt of this email and advise on the expected date of return.
+
+Thanking you,
+
+Tool India
+A-8/1/1, MIDC Area, Nagpur-16
+sales@toolindia.in | ISO 9001:2008`;
+  }else if(type==='due'){
+    const dl=daysLeft(e.due);
+    subject=`Urgent: ${dl<0?'Overdue':'Expiring Soon'} — ${e.type} ${e.ref} — ${e.customer}`;
+    body=`Dear Sir / Madam,
+
+Greetings from Tool India!
+
+This is to bring to your attention that the following ${e.type} is ${dl<0?`overdue by ${Math.abs(dl)} days`:`expiring in ${dl} days`}:
+
+  Customer     : ${e.customer}
+  Reference No : ${e.ref}
+  Order Ref    : ${e.order||'—'}
+  Amount       : ₹${fmt(e.amount)}
+  Issue Date   : ${fmtD(e.issue)}
+  Last Supply  : ${fmtD(e.supply)}
+  Return Date  : ${fmtD(e.due)}
+
+We request you to kindly take immediate action for the return / renewal of the above ${e.type}.
+
+Thanking you,
+
+Tool India
+A-8/1/1, MIDC Area, Nagpur-16
+sales@toolindia.in | ISO 9001:2008`;
+  }else{
+    subject=`Regarding ${e.type} — ${e.ref} — ${e.customer}`;
+    body=`Dear Sir / Madam,
+
+Greetings from Tool India!
+
+We are writing regarding the following ${e.type==='SD'?'Security Deposit':'Bank Guarantee'}:
+
+  Customer     : ${e.customer}
+  Reference No : ${e.ref}
+  Order Ref    : ${e.order||'—'}
+  Amount       : ₹${fmt(e.amount)}
+  Issue Date   : ${fmtD(e.issue)}
+  Last Supply  : ${fmtD(e.supply)}
+  Return Date  : ${fmtD(e.due)}
+
+[Please add your message here]
+
+Thanking you,
+
+Tool India
+A-8/1/1, MIDC Area, Nagpur-16
+sales@toolindia.in | ISO 9001:2008`;
+  }
+  document.getElementById('em-subject').value=subject;
+  document.getElementById('em-body').value=body;
+  document.getElementById('email-overlay').classList.add('open');
+}
+function closeEmailModal(){document.getElementById('email-overlay').classList.remove('open');}
+function sendEmail(){
+  const to=document.getElementById('em-to').value.trim();
+  const cc=document.getElementById('em-cc').value.trim();
+  const subject=encodeURIComponent(document.getElementById('em-subject').value);
+  const body=encodeURIComponent(document.getElementById('em-body').value);
+  if(!to){alert('Please enter customer email address.');return;}
+  const ccPart=cc?`&cc=${encodeURIComponent(cc)}`:'';
+  window.location.href=`mailto:${to}?${ccPart}&subject=${subject}&body=${body}`;
+  closeEmailModal();
+}
+document.getElementById('email-overlay').addEventListener('click',function(e){if(e.target===this)closeEmailModal();});
+
+// ── CALC ──
+function calcReturnDate(){
+  const supply=document.getElementById('f-supply').value;
+  if(!supply)return;
+  // Auto-suggest return date as 18 months from supply
+  const d=new Date(supply);
+  d.setMonth(d.getMonth()+18);
+  if(!document.getElementById('f-due').value)document.getElementById('f-due').value=d.toISOString().split('T')[0];
+}
+function calcFd(){
+  const amt=Number(document.getElementById('f-amount').value)||0;
+  const pctSel=document.getElementById('f-fd-pct').value;
+  const customPct=Number(document.getElementById('f-fd-custom').value)||0;
+  const pct=pctSel==='custom'?customPct:(Number(pctSel)||0);
+  document.getElementById('f-fd-amt').value=pct?Math.round(amt*pct/100):'';
+  calcFdInterest();
+}
+function calcFdInterest(){
+  const a=Number(document.getElementById('f-fd-amt').value)||0,r=Number(document.getElementById('f-fd-rate').value)||0,t=Number(document.getElementById('f-fd-tenure').value)||0;
+  if(a&&r&&t)document.getElementById('f-fd-interest').value=Math.round(a*r/100*t/12);
+}
+function toggleTypeFields(){
+  const isBG=document.getElementById('f-type').value==='BG';
+  document.getElementById('fd-section').style.display=isBG?'block':'none';
+  document.getElementById('sd-section').style.display=isBG?'none':'block';
+}
+
+// ── FILE ──
+function handleFileSelect(ev){
+  const file=ev.target.files[0];if(!file)return;
+  if(file.size>2*1024*1024){alert('Max 2MB.');return;}
+  const r=new FileReader();
+  r.onload=e=>{pendingFileData=e.target.result;pendingFileName=file.name;document.getElementById('f-doc-preview').style.display='flex';document.getElementById('f-doc-preview-name').textContent='📎 '+file.name;};
+  r.readAsDataURL(file);
+}
+function clearFile(){pendingFileData=null;pendingFileName=null;document.getElementById('f-doc-file').value='';document.getElementById('f-doc-preview').style.display='none';}
+function viewDoc(id){
+  const e=entries.find(x=>x.id===id);if(!e||!e.docData)return;
+  document.getElementById('doc-title').textContent=e.ref+' — '+e.docName;
+  const b=document.getElementById('doc-body');
+  b.innerHTML=e.docData.startsWith('data:application/pdf')?`<iframe src="${e.docData}"></iframe>`:`<img src="${e.docData}" alt="Document">`;
+  document.getElementById('doc-overlay').classList.add('open');
+}
+function closeDocViewer(){document.getElementById('doc-overlay').classList.remove('open');document.getElementById('doc-body').innerHTML='';}
+document.getElementById('doc-overlay').addEventListener('click',function(e){if(e.target===this)closeDocViewer();});
+
+// ── ENTRY MODAL ──
+function openModal(id){
+  editId=id||null;pendingFileData=null;pendingFileName=null;
+  document.getElementById('f-doc-file').value='';document.getElementById('f-doc-preview').style.display='none';
+  document.getElementById('modal-title').textContent=id?'EDIT ENTRY':'ADD NEW ENTRY';
+  if(id){
+    const e=entries.find(x=>x.id===id);
+    ['type','status','customer','email','ref','order','amount','bank','issue','supply','due','claim','remarks'].forEach(k=>{const el=document.getElementById('f-'+k);if(el)el.value=e[k]||'';});
+    document.getElementById('f-sd-type').value=e.sdType||'';
+    document.getElementById('f-sd-date').value=e.sdDate||'';
+    document.getElementById('f-fd-pct').value=e.fdPct||'';
+    document.getElementById('f-fd-custom').value='';
+    document.getElementById('f-fd-amt').value=e.fdAmt||'';
+    document.getElementById('f-fd-rate').value=e.fdRate||'';
+    document.getElementById('f-fd-tenure').value=e.fdTenure||'';
+    document.getElementById('f-fd-interest').value=e.fdInterest||'';
+    document.getElementById('f-fd-actual').value=e.fdActual||'';
+    document.getElementById('f-rem-months').value=e.remMonths||12;
+    document.getElementById('f-rem-freq').value=e.remFreq||15;
+    if(e.docData){pendingFileData=e.docData;pendingFileName=e.docName;document.getElementById('f-doc-preview').style.display='flex';document.getElementById('f-doc-preview-name').textContent='📎 '+e.docName;}
+  }else{
+    ['customer','email','ref','order','amount','bank','issue','supply','due','claim','remarks'].forEach(k=>document.getElementById('f-'+k).value='');
+    document.getElementById('f-type').value='BG';document.getElementById('f-status').value='active';
+    document.getElementById('f-sd-type').value='';document.getElementById('f-sd-date').value='';
+    ['f-fd-pct','f-fd-custom','f-fd-amt','f-fd-rate','f-fd-tenure','f-fd-interest','f-fd-actual'].forEach(k=>document.getElementById(k).value='');
+    document.getElementById('f-rem-months').value=12;document.getElementById('f-rem-freq').value=15;
+  }
+  toggleTypeFields();
+  document.getElementById('overlay').classList.add('open');
+}
+function closeModal(){document.getElementById('overlay').classList.remove('open');}
+function editEntry(id){openModal(id);}
+function markReturned(id){const e=entries.find(x=>x.id===id);if(e){e.status='returned';cloudSave();render();}}
+function saveEntry(){
+  const customer=document.getElementById('f-customer').value.trim();
+  const ref=document.getElementById('f-ref').value.trim();
+  const amount=document.getElementById('f-amount').value;
+  const due=document.getElementById('f-due').value;
+  const issue=document.getElementById('f-issue').value;
+  if(!customer||!ref||!amount||!due||!issue){alert('Please fill: Customer, Reference, Amount, Issue date and Return date.');return;}
+  const pctSel=document.getElementById('f-fd-pct').value;
+  const fdPct=pctSel==='custom'?Number(document.getElementById('f-fd-custom').value)||0:(Number(pctSel)||0);
+  const entry={
+    id:editId||(Date.now()),
+    type:document.getElementById('f-type').value,status:document.getElementById('f-status').value,
+    customer,email:document.getElementById('f-email').value.trim(),
+    ref,order:document.getElementById('f-order').value.trim(),
+    amount:Number(amount),bank:document.getElementById('f-bank').value.trim(),
+    issue,supply:document.getElementById('f-supply').value,
+    due,claim:document.getElementById('f-claim').value,
+    sdType:document.getElementById('f-sd-type').value,sdDate:document.getElementById('f-sd-date').value,
+    fdPct,fdAmt:Number(document.getElementById('f-fd-amt').value)||0,
+    fdRate:Number(document.getElementById('f-fd-rate').value)||'',
+    fdTenure:Number(document.getElementById('f-fd-tenure').value)||'',
+    fdInterest:Number(document.getElementById('f-fd-interest').value)||'',
+    fdActual:document.getElementById('f-fd-actual').value,
+    remMonths:Number(document.getElementById('f-rem-months').value)||12,
+    remFreq:Number(document.getElementById('f-rem-freq').value)||15,
+    docData:pendingFileData||'',docName:pendingFileName||'',
+    remarks:document.getElementById('f-remarks').value.trim(),
+  };
+  if(editId){const i=entries.findIndex(x=>x.id===editId);entries[i]=entry;}else entries.push(entry);
+  cloudSave();closeModal();render();renderReport();
+}
+document.getElementById('overlay').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+// ── FD ──
+function openFdModal(id){editFdId=id||null;if(id){const f=fds.find(x=>x.id===id);['ref','cust','amt','pct','rate','start','end','proj','actual','bank'].forEach(k=>document.getElementById('fd-'+k).value=f[k]||'');}else{['ref','cust','amt','pct','rate','start','end','proj','actual','bank'].forEach(k=>document.getElementById('fd-'+k).value='');}document.getElementById('fd-overlay').classList.add('open');}
+function closeFdModal(){document.getElementById('fd-overlay').classList.remove('open');}
+function saveFd(){const ref=document.getElementById('fd-ref').value.trim(),amt=document.getElementById('fd-amt').value;if(!ref||!amt){alert('Fill Reference and Amount.');return;}const fd={id:editFdId||(Date.now()),ref,cust:document.getElementById('fd-cust').value.trim(),amt:Number(amt),pct:Number(document.getElementById('fd-pct').value)||0,rate:Number(document.getElementById('fd-rate').value)||0,start:document.getElementById('fd-start').value,end:document.getElementById('fd-end').value,proj:Number(document.getElementById('fd-proj').value)||0,actual:document.getElementById('fd-actual').value,bank:document.getElementById('fd-bank').value.trim()};if(editFdId){const i=fds.findIndex(x=>x.id===editFdId);fds[i]=fd;}else fds.push(fd);cloudSave();closeFdModal();renderFd();renderReport();}
+document.getElementById('fd-overlay').addEventListener('click',function(e){if(e.target===this)closeFdModal();});
+function renderFd(){
+  const ta=fds.reduce((s,f)=>s+Number(f.amt||0),0),tp=fds.reduce((s,f)=>s+Number(f.proj||0),0),tac=fds.filter(f=>f.actual).reduce((s,f)=>s+Number(f.actual||0),0);
+  document.getElementById('fd-stats').innerHTML=`<div class="stat"><div class="stat-lbl">FD count</div><div class="stat-val">${fds.length}</div></div><div class="stat"><div class="stat-lbl">Total FD amount</div><div class="stat-val green" style="font-size:14px">₹${fmt(ta)}</div></div><div class="stat"><div class="stat-lbl">Projected interest</div><div class="stat-val green" style="font-size:14px">₹${fmt(tp)}</div></div><div class="stat"><div class="stat-lbl">Actual received</div><div class="stat-val green" style="font-size:14px">₹${fmt(tac)}</div></div>`;
+  const tb=document.getElementById('fd-tbl'),em=document.getElementById('fd-empty');
+  if(!fds.length){tb.innerHTML='';em.style.display='block';return;}em.style.display='none';
+  tb.innerHTML=fds.map(f=>`<tr><td style="font-size:11px;color:#666">${f.ref}</td><td>${f.cust}</td><td>₹${fmt(f.amt)}</td><td>${f.pct?f.pct+'%':'—'}</td><td style="font-size:12px">${fmtD(f.start)}</td><td style="font-size:12px">${fmtD(f.end)}</td><td>${f.rate?f.rate+'%':'—'}</td><td style="color:var(--green);font-weight:500">₹${fmt(f.proj)}</td><td style="font-size:11px;color:#999">${f.bank||'—'}</td><td><button class="sb" onclick="openFdModal(${f.id})">Edit</button><button class="sb" style="margin-left:4px;color:#9b1111;border-color:#9b1111" onclick="if(confirm('Delete?')){fds=fds.filter(x=>x.id!==${f.id});cloudSave();renderFd();}">Del</button></td></tr>`).join('');
+}
+
+// ── CHARGES ──
+function openChgModal(id){editChgId=id||null;if(id){const c=charges.find(x=>x.id===id);['date','ref','cust','bank','type','amt','remarks'].forEach(k=>document.getElementById('chg-'+k).value=c[k]||'');}else{['date','ref','cust','bank','amt','remarks'].forEach(k=>document.getElementById('chg-'+k).value='');document.getElementById('chg-type').value='BG Commission';document.getElementById('chg-date').value=new Date().toISOString().split('T')[0];}document.getElementById('chg-overlay').classList.add('open');}
+function closeChgModal(){document.getElementById('chg-overlay').classList.remove('open');}
+function saveChg(){const date=document.getElementById('chg-date').value,amt=document.getElementById('chg-amt').value;if(!date||!amt){alert('Fill Date and Amount.');return;}const c={id:editChgId||(Date.now()),date,ref:document.getElementById('chg-ref').value.trim(),cust:document.getElementById('chg-cust').value.trim(),bank:document.getElementById('chg-bank').value.trim(),type:document.getElementById('chg-type').value,amt:Number(amt),remarks:document.getElementById('chg-remarks').value.trim()};if(editChgId){const i=charges.findIndex(x=>x.id===editChgId);charges[i]=c;}else charges.push(c);cloudSave();closeChgModal();renderChg();renderReport();}
+document.getElementById('chg-overlay').addEventListener('click',function(e){if(e.target===this)closeChgModal();});
+function renderChg(){
+  const tot=charges.reduce((s,c)=>s+Number(c.amt||0),0);
+  const byT={};charges.forEach(c=>{byT[c.type]=(byT[c.type]||0)+Number(c.amt);});
+  const top=Object.entries(byT).sort((a,b)=>b[1]-a[1])[0];
+  const yr=charges.filter(c=>c.date&&c.date.startsWith(new Date().getFullYear()+'')).reduce((s,c)=>s+Number(c.amt||0),0);
+  document.getElementById('chg-stats').innerHTML=`<div class="stat"><div class="stat-lbl">Total entries</div><div class="stat-val">${charges.length}</div></div><div class="stat"><div class="stat-lbl">Total charges</div><div class="stat-val red" style="font-size:14px">₹${fmt(tot)}</div></div><div class="stat"><div class="stat-lbl">Top type</div><div class="stat-val" style="font-size:14px">${top?top[0]:'—'}</div></div><div class="stat"><div class="stat-lbl">This year</div><div class="stat-val red" style="font-size:14px">₹${fmt(yr)}</div></div>`;
+  const tb=document.getElementById('chg-tbl'),em=document.getElementById('chg-empty');
+  if(!charges.length){tb.innerHTML='';em.style.display='block';return;}em.style.display='none';
+  tb.innerHTML=[...charges].sort((a,b)=>new Date(b.date)-new Date(a.date)).map(c=>`<tr><td style="font-size:12px">${fmtD(c.date)}</td><td style="font-size:11px;color:#666">${c.ref||'—'}</td><td>${c.cust||'—'}</td><td><span class="badge b-bg" style="font-size:10px">${c.type}</span></td><td style="color:#9b1111;font-weight:500">₹${fmt(c.amt)}</td><td style="font-size:11px;color:#999">${c.bank||'—'}</td><td style="font-size:11px;color:#999">${c.remarks||''}</td><td><button class="sb" onclick="openChgModal(${c.id})">Edit</button><button class="sb" style="margin-left:4px;color:#9b1111;border-color:#9b1111" onclick="if(confirm('Delete?')){charges=charges.filter(x=>x.id!==${c.id});cloudSave();renderChg();}">Del</button></td></tr>`).join('');
+}
+
+// ── REPORT ──
+function renderReport(){
+  const active=entries.filter(e=>e.status!=='returned');
+  const ov=active.filter(e=>daysLeft(e.due)<0),soon=active.filter(e=>{const d=daysLeft(e.due);return d>=0&&d<=60;});
+  const remDue=active.filter(e=>getReminderStatus(e));
+  const totBG=active.reduce((s,e)=>s+Number(e.amount||0),0);
+  const totFD=active.reduce((s,e)=>s+Number(e.fdAmt||0),0);
+  const totPI=fds.reduce((s,f)=>s+Number(f.proj||0),0);
+  const totAI=fds.filter(f=>f.actual).reduce((s,f)=>s+Number(f.actual||0),0);
+  const totC=charges.reduce((s,c)=>s+Number(c.amt||0),0);
+  const net=(totAI||totPI)-totC;
+  const sdDed=active.filter(e=>e.type==='SD'&&e.sdType==='deducted').reduce((s,e)=>s+Number(e.amount||0),0);
+  const sdDep=active.filter(e=>e.type==='SD'&&e.sdType==='deposited').reduce((s,e)=>s+Number(e.amount||0),0);
+  const byT={};charges.forEach(c=>{byT[c.type]=(byT[c.type]||0)+Number(c.amt);});
+  document.getElementById('report-content').innerHTML=`
+    <div class="rcard"><h3>BG & SD summary</h3>
+      <div class="rrow"><span>Active entries</span><span>${active.length}</span></div>
+      <div class="rrow"><span>Overdue</span><span class="red-text">${ov.length}</span></div>
+      <div class="rrow"><span>Due in 60 days</span><span class="amber-text">${soon.length}</span></div>
+      <div class="rrow"><span>Reminder due now</span><span class="red-text">${remDue.length}</span></div>
+      <div class="rrow"><span>SD deducted from customer</span><span class="amber-text">₹${fmt(sdDed)}</span></div>
+      <div class="rrow"><span>SD deposited by us</span><span class="red-text">₹${fmt(sdDep)}</span></div>
+      <div class="rrow"><span>Total value at risk</span><span>₹${fmt(totBG)}</span></div>
+    </div>
+    <div class="rcard"><h3>FD & interest</h3>
+      <div class="rrow"><span>Total FD locked</span><span class="green-text">₹${fmt(totFD)}</span></div>
+      <div class="rrow"><span>Projected interest</span><span class="green-text">₹${fmt(totPI)}</span></div>
+      <div class="rrow"><span>Actual received</span><span class="green-text">₹${fmt(totAI)}</span></div>
+    </div>
+    <div class="rcard"><h3>Bank charges</h3>
+      ${Object.entries(byT).map(([t,v])=>`<div class="rrow"><span>${t}</span><span class="red-text">₹${fmt(v)}</span></div>`).join('')}
+      <div class="rrow"><span>Total</span><span class="red-text">₹${fmt(totC)}</span></div>
+    </div>
+    <div class="rcard"><h3>Net position</h3>
+      <div class="rrow"><span>Interest earned</span><span class="green-text">₹${fmt(totAI||totPI)}</span></div>
+      <div class="rrow"><span>Charges paid</span><span class="red-text">₹${fmt(totC)}</span></div>
+      <div class="rrow"><span>Net</span><span class="${net>=0?'green-text':'red-text'}">₹${fmt(Math.abs(net))} ${net>=0?'▲':'▼'}</span></div>
+    </div>`;
+  const rows=active.map(e=>{
+    const myC=charges.filter(c=>c.ref===e.ref).reduce((s,c)=>s+Number(c.amt||0),0);
+    const myI=fds.filter(f=>f.ref===e.ref).reduce((s,f)=>s+Number(f.proj||0),0);
+    const rs=getReminderStatus(e);
+    return `<tr><td>${e.customer}</td><td style="font-size:11px;color:#666">${e.ref}</td><td style="font-size:12px">${fmtD(e.issue)}</td><td style="font-size:12px">${fmtD(e.supply)}</td><td><span class="badge ${e.type==='BG'?'b-bg':'b-sd'}">${e.type}</span></td><td>${e.sdType?`<span class="badge ${e.sdType==='deducted'?'b-deducted':'b-deposited'}">${e.sdType}</span>`:'—'}</td><td>₹${fmt(e.amount)}</td><td class="green-text">₹${fmt(myI)}</td><td class="red-text">₹${fmt(myC)}</td><td class="${(myI-myC)>=0?'green-text':'red-text'}">₹${fmt(Math.abs(myI-myC))} ${(myI-myC)>=0?'▲':'▼'}</td><td>${rs?`<span class="badge b-rem">🔔 Due</span>`:'—'}</td></tr>`;
+  }).join('');
+  document.getElementById('report-detail').innerHTML=`<table><thead><tr><th>Customer</th><th>Reference</th><th>Issue date</th><th>Last supply</th><th>Type</th><th>SD type</th><th>Amount</th><th>Interest</th><th>Charges</th><th>Net</th><th>Reminder</th></tr></thead><tbody>${rows||'<tr><td colspan="11" style="text-align:center;padding:1.5rem;color:#999">No active entries</td></tr>'}</tbody></table>`;
+}
+
+// ── AI DIGEST ──
+async function showAiDigest(){
+  const box=document.getElementById('ai-box'),out=document.getElementById('ai-text');
+  box.style.display='block';out.textContent='Generating...';
+  const active=entries.filter(e=>e.status!=='returned');
+  const remDue=active.filter(e=>getReminderStatus(e));
+  const prompt=`You are a finance assistant for Tool India, Nagpur. Give a concise 6-8 line digest: urgent actions, reminder status, SD deductions vs deposits, FD interest vs charges. Use ₹ Indian formatting.\n\nActive: ${JSON.stringify(active.map(e=>({type:e.type,customer:e.customer,amount:e.amount,supply:e.supply,due:e.due,daysLeft:daysLeft(e.due),sdType:e.sdType,reminderDue:!!getReminderStatus(e)})))}\nReminder due: ${remDue.length}\nTotal charges: ₹${fmt(charges.reduce((s,c)=>s+Number(c.amt||0),0))}\nTotal FD interest: ₹${fmt(fds.reduce((s,f)=>s+Number(f.proj||0),0))}`;
+  try{const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,messages:[{role:'user',content:prompt}]})});const d=await r.json();out.textContent=d.content?.[0]?.text||'Could not generate.';}catch(e){out.textContent='Could not connect to AI.';}
+}
+</script>
+</body>
+</html>
